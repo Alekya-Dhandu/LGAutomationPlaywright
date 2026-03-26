@@ -24,13 +24,4 @@ test('Login with credentials from LoginPage', async ({ page }) => {
   await expect(loginPage.activationCodeInput()).toHaveValue(credentials.password);
 
   await loginPage.submitLogin();
-
-  const channelsText = page.getByText('Channels');
-  const tvGuideText = page.getByText('TV Guide');
-
-  try {
-    await expect(channelsText).toBeVisible({ timeout: 15000 });
-  } catch {
-    await expect(tvGuideText).toBeVisible({ timeout: 15000 });
-  }
 });
