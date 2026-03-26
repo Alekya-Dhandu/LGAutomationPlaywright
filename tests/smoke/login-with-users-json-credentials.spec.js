@@ -82,7 +82,7 @@ test.describe('Smoke Login', () => {
     const signInButton = page.locator('#access-code-signIn-redirect');
 
     // 1. Open the application login page
-    await page.goto('/');
+    await page.goto('/', { waitUntil: 'networkidle' });
 
     // Required assertion: successful navigation to the login page
     await expect(page).toHaveURL(/https?:\/\/.+/);
@@ -97,7 +97,7 @@ test.describe('Smoke Login', () => {
     await expect(page.getByText('Activation Code')).toBeVisible();
 
     // 3. Sign In button is visible before clicking
-    await expect(page.getByText('Sign In')).toBeVisible();
+    await expect(signInButton).toBeVisible();
 
     // 2. Enter username from data/test-data/users.json into subscriber number input
     await subscriberInput.fill(username);
@@ -113,25 +113,25 @@ test.describe('Smoke Login', () => {
     const launchTargetPromise = waitForLaunchTargetFromPlatformSettings(page);
 
     // 4. Click the Sign In button
-    await signInButton.getByText('Sign In').click();
+    await signInButton.click();
 
     const launchTargetInfo = await launchTargetPromise;
 
     // Required assertion: navigate based on platform settings API devices.app_launch_target_screen.
     if (launchTargetInfo && launchTargetInfo.target.includes('live')) {
       await expect(page.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible();
-      await expect(page.getByText('TV Guide')).toBeVisible();
+      await expect(page.getByText('TV Guide').first()).toBeVisible();
       return;
     }
 
     if (launchTargetInfo && launchTargetInfo.target.includes('home')) {
-      await expect(page.getByText('Channels')).toBeVisible();
+      await expect(page.getByText('Channels').first()).toBeVisible();
       return;
     }
 
     // Fallback assertion when API field is unavailable: ensure user still reaches a valid post-login screen.
     try {
-      await expect(page.getByText('Channels')).toBeVisible({ timeout: 15000 });
+      await expect(page.getByText('Channels').first()).toBeVisible({ timeout: 15000 });
     } catch {
       await expect(page.getByText(/\d{2}:\d{2}:\d{2}/)).toBeVisible({ timeout: 15000 });
     }
